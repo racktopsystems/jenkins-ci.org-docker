@@ -1,0 +1,18 @@
+#!/bin/sh
+CONTAINER_NAME="jenkins01"
+VOLUME_HOST="/var/lib/docker/volumes/jenkins01/jenkins_home"
+JENKINS_HOME="/var/jenkins_home"
+
+if [[ $1 == "in" ]]; then flag="-ai"; else flag=""; fi
+
+if [[ $(docker ps -a| awk '/jenkins01/ {print $NF}') == "jenkins01" ]]; then
+    docker start ${flag} ${CONTAINER_NAME}
+else
+
+    docker run \
+      --detach=true \
+      --name=${CONTAINER_NAME} \
+      --publish=18080:8080 \
+      --volume=${VOLUME_HOST}:${JENKINS_HOME} \
+      racktopsystems/jenkins
+fi
