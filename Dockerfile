@@ -1,4 +1,5 @@
 FROM ubuntu:14.04
+MAINTAINER <Sam Zaydel szaydel@racktopsystems.com>
 
 RUN echo "1.565.1" > .lts-version-number
 
@@ -10,6 +11,12 @@ RUN wget -q -O - http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key | su
 RUN echo deb http://pkg.jenkins-ci.org/debian-stable binary/ >> /etc/apt/sources.list
 RUN apt-get update && apt-get install -y jenkins
 RUN mkdir -p /var/jenkins_home && chown -R jenkins /var/jenkins_home
+
+# Setup ssh config
+RUN mkdir -p /var/lib/jenkins/.ssh
+RUN printf "Host *\n    User jenkins\n    IdentityFile /var/jenkins_home/.ssh/id_rsa\n" > /var/lib/jenkins/.ssh/config
+RUN chmod 700 /var/lib/jenkins/.ssh && chown -R jenkins /var/lib/jenkins/.ssh
+
 ADD init.groovy /tmp/WEB-INF/init.groovy
 RUN cd /tmp && zip -g /usr/share/jenkins/jenkins.war WEB-INF/init.groovy
 ADD ./jenkins.sh /usr/local/bin/jenkins.sh
@@ -23,9 +30,9 @@ ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_PREFIX /
 
 # for main web interface:
-EXPOSE 8080 
+EXPOSE 8080
 
 # will be used by attached slave agents:
-EXPOSE 50000 
+EXPOSE 50000
 
 CMD ["/usr/local/bin/jenkins.sh"]
