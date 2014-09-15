@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 CONTAINER_NAME="jenkins01"
 VOLUME_HOST="/var/lib/docker/volumes/jenkins01/jenkins_home"
 JENKINS_HOME="/var/jenkins_home"
